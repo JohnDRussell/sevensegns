@@ -9,8 +9,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use ieee.numeric_std.ALL;
---use IEEE.STD_LOGIC_arith.ALL;
---use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity main_7_seg is
      port(b1,b2,b3,b4 : in std_logic;
@@ -22,15 +20,11 @@ entity main_7_seg is
 end main_7_seg;
 
 architecture behavioral of main_7_seg is
-    --signal bcd1, bcd2, bcd3, bcd4 : std_logic_vector (3 downto 0);
     signal bcd1, bcd2, bcd3, bcd4 : unsigned (3 downto 0) := "0000";
     signal clk2 : std_logic := '0';
     signal pushbuttons : std_logic_vector(3 downto 0) := "0000";
     signal db_pushbuttons : std_logic_vector(3 downto 0) := "0000";
-    --signal counter : std_logic_vector(1 downto 0);
     signal counter : unsigned (1 downto 0) := "00";
-    --signal clk_divider : std_logic_vector(20 downto 0);
-    --signal clk_divider : unsigned (20 downto 0);    
     component Debounce is
         port( cclk : in std_logic;
                 inp : in std_logic_vector(3 downto 0);
@@ -45,14 +39,8 @@ begin
               inp => pushbuttons,
               cclr => reset,
               db  => db_pushbuttons);
-        --bcd1 <= "0001";
-        --bcd2 <= "0010";
-        --bcd3 <= "0011";
-        --bcd4 <= "0100";
-        --counter <= "00";
 process (clk)
 begin
-    -- clk2 <= clk;
     if rising_edge(clk) then
         clk2 <= '1';
     else
@@ -68,20 +56,6 @@ begin
     end if;
 end process;
 
---P1: process (reset)
---begin
---    if (reset = '1') then
---        -- do something here
---        bcd1 <= "0000";
---        bcd2 <= "0000";
---        bcd3 <= "0000";
---        bcd4 <= "0000";
---        --counter <= "00";
---        --clk2 <= '0';
---    end if;
---end process P1;
-
--- process (clk, reset)
 P2: process (clk2, reset)
 begin
     if reset = '1' then
@@ -91,13 +65,6 @@ begin
         bcd3 <= "0000";
         bcd4 <= "0000";
     elsif rising_edge(clk2) then
-    -- elsif rising_edge(clk) then
-    --if rising_edge(clk2) then
-        --bcd1 <= "0001";
-        --bcd2 <= "0010";
-        --bcd3 <= "0011";
-        --bcd4 <= "0100";
-        --bcd4 <= bcd4 + 1;
         counter <= counter + 1;
         if db_pushbuttons(0) = '1' then -- db_b1
             if bcd1 <= "0010" then
@@ -136,7 +103,6 @@ begin
 end process P2;
 
 P3: process (counter, bcd1, bcd2, bcd3, bcd4)
-    -- variable display : std_logic_vector(3 downto 0);
     variable display : unsigned (3 downto 0);
 begin
     case counter is
