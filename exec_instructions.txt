@@ -1,3 +1,8 @@
+To actually use this on a Xilinx you will have to
+change the clock back to the original divisible clock.
+See the comments in sevensegns.vhdl near the line
+P1: process(clk)
+
 To build:
 
 ghdl -a sevensegns.vhdl

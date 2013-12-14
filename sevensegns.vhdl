@@ -39,20 +39,33 @@ begin
               inp => pushbuttons,
               cclr => reset,
               db  => db_pushbuttons);
+
+-----------------------------------------
+---- To actually use this code on
+---- an FPGA processor, the clock below
+---- needs to be restored to the 
+---- commentted out code.
+---- 
+-----------------------------------------
 process (clk)
 begin
+    -- Comment the next four lines
+    -- for actually running the code
+    -- on real hardware.
     if rising_edge(clk) then
         clk2 <= '1';
     else
         clk2 <= '0';
-    --    --if clk_divider <= "1100001101010000" then
-    --    if clk_divider <= "1" then
+
+    -- Uncomment the next 6 lines
+    -- for actually running the code
+    -- on real hardware.
+    --    if clk_divider <= "1100001101010000" then
     --        clk_divider <= clk_divider + 1;
     --        clk2 <= '0';
     --    else
     --        clk_divider <= (others => '0');
     --        clk2 <= '1';
-    --    end if;
     end if;
 end process;
 
