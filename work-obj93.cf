@@ -1,10 +1,10 @@
 v 3
-file . "sevensegns_tb.vhdl" "20131214075653.000" "20131214025700.830":
+file . "sevensegns_tb.vhdl" "20131214195634.000" "20131214145840.359":
   entity sevensegns_tb at 9( 210) + 0 on 15;
   architecture behavioral_3 of sevensegns_tb at 16( 324) + 0 on 16;
-file . "debounce.vhdl" "20131214063348.000" "20131214025700.401":
+file . "debounce.vhdl" "20131214063348.000" "20131214145839.071":
   entity debounce at 1( 0) + 0 on 11;
   architecture behavioral_2 of debounce at 13( 293) + 0 on 12;
-file . "sevensegns.vhdl" "20131214073825.000" "20131214025700.585":
+file . "sevensegns.vhdl" "20131214195455.000" "20131214145840.117":
   entity main_7_seg at 9( 207) + 0 on 13;
-  architecture behavioral of main_7_seg at 24( 621) + 0 on 14;
+  architecture behavioral of main_7_seg at 22( 554) + 0 on 14;
