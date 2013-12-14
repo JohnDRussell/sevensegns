@@ -1,0 +1,136 @@
+ entity main is
+     port(b1,b2,b3,b4 : in STD_LOGIC;
+          clk         : in STD_LOGIC;
+          sseg        : out STD_LOGIC_VECTOR(0 to 6);
+          anodes      : out STD_LOGIC_VECTOR(3 downto 0);
+          reset       : in STD_LOGIC
+          );
+end main;
+
+architecture Behavioral of main is
+    signal bcd1, bcd2, bcd3, bcd4 : STD_LOGIC_VECTOR (3 downto 0);
+    signal clk2 : STD_LOGIC;
+    signal pushbuttons : STD_LOGIC_VECTOR(3 downto 0);
+    signal db_pushbuttons : STD_LOGIC_VECTOR(3 downto 0);
+    signal counter : STD_LOGIC_VECTOR(1 downto 0);
+    signal clk_divider : STD_LOGIC_VECTOR(20 downto 0);
+    component Debounce is
+        port( cclk : in STD_LOGIC;
+                inp : in STD_LOGIC_VECTOR(3 downto 0);
+                cclr : in STD_LOGIC;
+                db  : out STD_LOGIC_VECTOR(3 downto 0)
+                );
+    end component;
+begin
+    pushbuttons <= b4 & b3 & b2 & b1;
+    Db : Debounce port map
+            ( cclk => clk2,
+              inp => pushbuttons,
+              cclr => reset,
+              db  => db_pushbuttons);
+
+process (clk)
+begin
+    if rising_edge(clk) then
+        if clk_divider <= "1100001101010000" then
+            clk_divider <= clk_divider + 1;
+            clk2 <= '0';
+        else
+            clk_divider <= (others => '0');
+            clk2 <= '1';
+        end if;
+    end if;
+end process;
+
+process (clk2, reset)
+begin
+    if reset = '1' then
+        -- do something here
+        bcd1 <= "0000";
+        bcd2 <= "0000";
+        bcd3 <= "0000";
+        bcd4 <= "0000";
+    elsif rising_edge(clk2) then
+        counter <= counter + 1;
+        if db_pushbuttons(0) = '1' then -- db_b1
+            if bcd1 <= "1000" then
+                bcd1 <= bcd1 + 1;
+            else
+                bcd1 <= "0000";
+            end if;
+        elsif db_pushbuttons(1) = '1' then -- db_b2
+            if bcd2 <= "1000" then
+                bcd2 <= bcd2 + 1;
+            else
+                bcd2 <= "0000";
+            end if;
+        elsif db_pushbuttons(2) = '1' then -- db_b3
+            if bcd3 <= "1000" then
+                bcd3 <= bcd3 + 1;
+            else
+                bcd3 <= "0000";
+            end if;
+        elsif db_pushbuttons(3) = '1' then --db_b4
+            if bcd4 <= "1000" then
+                bcd4 <= bcd4 + 1;
+            else
+                bcd4 <= "0000";
+            end if;
+        end if;
+    end if;
+end process;
+
+process (counter, bcd1, bcd2, bcd3, bcd4)
+    variable display : STD_LOGIC_VECTOR(3 downto 0);
+begin
+    case counter is
+        when "00" => anodes <= "1110"; display := bcd1;
+        when "01" => anodes <= "1101"; display := bcd2;
+        when "10" => anodes <= "1011"; display := bcd3;
+        when "11" => anodes <= "0111"; display := bcd4;
+        when others => null;
+    end case;
+
+    case display is
+        when "0000" => sseg <= "0000001"; --0
+        when "0001" => sseg <= "1001111"; --1
+        when "0010" => sseg <= "0010010"; --2
+        when "0011" => sseg <= "0000110"; --3
+        when "0100" => sseg <= "1001100"; --4
+        when "0101" => sseg <= "0100100"; --5
+        when "0110" => sseg <= "0100000"; --6
+        when "0111" => sseg <= "0001111"; --7
+        when "1000" => sseg <= "0000000"; --8
+        when "1001" => sseg <= "0000100"; --9
+        when others => sseg <= "0010000"; --e, represents error
+    end case;
+end process;
+end Behavioral;
+
+entity Debounce is
+    port(cclk       :   in STD_LOGIC;
+          inp    :  in STD_LOGIC_VECTOR(3 downto 0);
+          cclr  :  in STD_LOGIC;
+          db     :  out STD_LOGIC_VECTOR(3 downto 0)
+         );
+end Debounce;
+
+architecture Behavioral of Debounce is
+    signal delay1, delay2, delay3 : STD_LOGIC_VECTOR(3 downto 0);
+begin
+    process (cclk, cclr)
+    begin
+        if cclr = '1' then
+            delay1 <= "0000";
+            delay2 <= "0000";
+            delay3 <= "0000";
+        elsif rising_edge(cclk) then
+            delay1 <= inp;
+            delay2 <= delay1;
+            delay3 <= delay2;
+        end if;
+    end process;
+    db <= delay1 and delay2 and delay3;
+end Behavioral;
+
+
